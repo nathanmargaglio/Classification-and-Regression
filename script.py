@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 import pickle
 import sys
 
+# helpers
+from scipy.stats import multivariate_normal
+
 def ldaLearn(X,y):
     # Inputs
     # X - a N x d matrix with each row corresponding to a training example
@@ -15,9 +18,27 @@ def ldaLearn(X,y):
     #
     # Outputs
     # means - A d x k matrix containing learnt means for each of the k classes
-    # covmat - A single d x d learnt covariance matrix 
+    # covmat - A single d x d learnt covariance matrix
     
-    # IMPLEMENT THIS METHOD 
+    # N: training examples
+    # d: features
+    # k: classes
+    
+    N, d = X.shape
+    unique_classes = np.unique(y) # grab each unique value
+    k = unique_classes.size
+    
+    _means = []
+    for uc in unique_classes:
+        is_class = (y == uc).reshape(y.shape[0], ) # condition-matrix where y is the class
+        from_class = X[is_class]                   # grab from X where y is the class
+        class_means = np.mean(from_class, axis=0)  # get the means for each column (d columns)
+        _means.append(class_means)
+
+    means = np.array(_means).T # reshape means to be d x k (versus k x d)
+    
+    covmat = np.cov(X.T)
+    
     return means,covmat
 
 def qdaLearn(X,y):
@@ -28,9 +49,9 @@ def qdaLearn(X,y):
     # Outputs
     # means - A d x k matrix containing learnt means for each of the k classes
     # covmats - A list of k d x d learnt covariance matrices for each of the k classes
-    
+
     # IMPLEMENT THIS METHOD
-    return means,covmats
+    return #means,covmats
 
 def ldaTest(means,covmat,Xtest,ytest):
     # Inputs
@@ -41,8 +62,18 @@ def ldaTest(means,covmat,Xtest,ytest):
     # acc - A scalar accuracy value
     # ypred - N x 1 column vector indicating the predicted labels
 
-    # IMPLEMENT THIS METHOD
-    return acc,ypred
+    res = np.zeros(len(ytest))
+    for i, x in enumerate(Xtest):
+        y = ytest[i]
+        values = []
+        for mean in means.T:
+            values.append(multivariate_normal.pdf(x, mean, covmat))
+
+        res[i] = np.argmax(np.array(values)) + 1 # we add one to match index
+        
+    acc = sum(res - ytest.reshape(len(ytest), ) == 0)/len(res)
+            
+    return acc, np.array(res).reshape(ytest.shape)
 
 def qdaTest(means,covmats,Xtest,ytest):
     # Inputs
@@ -54,28 +85,28 @@ def qdaTest(means,covmats,Xtest,ytest):
     # ypred - N x 1 column vector indicating the predicted labels
 
     # IMPLEMENT THIS METHOD
-    return acc,ypred
+    return #acc,ypred
 
 def learnOLERegression(X,y):
-    # Inputs:                                                         
-    # X = N x d 
-    # y = N x 1                                                               
-    # Output: 
-    # w = d x 1 
-	
-    # IMPLEMENT THIS METHOD                                                   
-    return w
+    # Inputs:
+    # X = N x d
+    # y = N x 1
+    # Output:
+    # w = d x 1
+
+    # IMPLEMENT THIS METHOD
+    return #w
 
 def learnRidgeRegression(X,y,lambd):
     # Inputs:
-    # X = N x d                                                               
-    # y = N x 1 
+    # X = N x d
+    # y = N x 1
     # lambd = ridge parameter (scalar)
-    # Output:                                                                  
-    # w = d x 1                                                                
+    # Output:
+    # w = d x 1
 
-    # IMPLEMENT THIS METHOD                                                   
-    return w
+    # IMPLEMENT THIS METHOD
+    return #w
 
 def testOLERegression(w,Xtest,ytest):
     # Inputs:
@@ -84,33 +115,33 @@ def testOLERegression(w,Xtest,ytest):
     # ytest = X x 1
     # Output:
     # mse
-    
+
     # IMPLEMENT THIS METHOD
-    return mse
+    return #mse
 
 def regressionObjVal(w, X, y, lambd):
 
     # compute squared error (scalar) and gradient of squared error with respect
     # to w (vector) for the given data X and y and the regularization parameter
-    # lambda                                                                  
+    # lambda
 
-    # IMPLEMENT THIS METHOD                                             
-    return error, error_grad
+    # IMPLEMENT THIS METHOD
+    return #error, error_grad
 
 def mapNonLinear(x,p):
-    # Inputs:                                                                  
-    # x - a single column vector (N x 1)                                       
-    # p - integer (>= 0)                                                       
-    # Outputs:                                                                 
-    # Xp - (N x (p+1)) 
-	
+    # Inputs:
+    # x - a single column vector (N x 1)
+    # p - integer (>= 0)
+    # Outputs:
+    # Xp - (N x (p+1))
+
     # IMPLEMENT THIS METHOD
-    return Xp
+    return #Xp
 
 # Main script
 
 # Problem 1
-# load the sample data                                                                 
+# load the sample data
 if sys.version_info.major == 2:
     X,y,Xtest,ytest = pickle.load(open('sample.pickle','rb'))
 else:
@@ -118,9 +149,10 @@ else:
 
 # LDA
 means,covmat = ldaLearn(X,y)
-ldaacc,ldares = ldaTest(means,covmat,Xtest,ytest)
-print('LDA Accuracy = '+str(ldaacc))
+#ldaacc,ldares = ldaTest(means,covmat,Xtest,ytest)
+#print('LDA Accuracy = '+str(ldaacc))
 # QDA
+"""
 means,covmats = qdaLearn(X,y)
 qdaacc,qdares = qdaTest(means,covmats,Xtest,ytest)
 print('QDA Accuracy = '+str(qdaacc))
@@ -194,7 +226,7 @@ lambdas = np.linspace(0, 1, num=k)
 i = 0
 mses4_train = np.zeros((k,1))
 mses4 = np.zeros((k,1))
-opts = {'maxiter' : 20}    # Preferred value.                                                
+opts = {'maxiter' : 20}    # Preferred value.
 w_init = np.ones((X_i.shape[1],1))
 for lambd in lambdas:
     args = (X_i, y, lambd)
@@ -244,3 +276,4 @@ plt.plot(range(pmax),mses5)
 plt.title('MSE for Test Data')
 plt.legend(('No Regularization','Regularization'))
 plt.show()
+"""
