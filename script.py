@@ -50,8 +50,24 @@ def qdaLearn(X,y):
     # means - A d x k matrix containing learnt means for each of the k classes
     # covmats - A list of k d x d learnt covariance matrices for each of the k classes
 
-    # IMPLEMENT THIS METHOD
-    return #means,covmats
+    N, d = X.shape
+    unique_classes = np.unique(y) # grab each unique value
+    k = unique_classes.size
+    
+    _means = []
+    covmats = []
+    for uc in unique_classes:
+        is_class = (y == uc).reshape(y.shape[0], ) # condition-matrix where y is the class
+        from_class = X[is_class]                   # grab from X where y is the class
+        class_means = np.mean(from_class, axis=0)  # get the means for each column (d columns)
+        _means.append(class_means)
+        
+        covmat = np.cov(from_class.T)
+        covmats.append(covmat)
+
+    means = np.array(_means).T # reshape means to be d x k (versus k x d)
+    
+    return means,covmats
 
 def ldaTest(means,covmat,Xtest,ytest):
     # Inputs
@@ -84,8 +100,20 @@ def qdaTest(means,covmats,Xtest,ytest):
     # acc - A scalar accuracy value
     # ypred - N x 1 column vector indicating the predicted labels
 
-    # IMPLEMENT THIS METHOD
-    return #acc,ypred
+    res = np.zeros(len(ytest))
+    for i, x in enumerate(Xtest):
+        y = ytest[i]
+        values = []
+        for j in range(len(means.T)):
+            mean = means.T[j]
+            covmat = covmats[j]
+            values.append(multivariate_normal.pdf(x, mean, covmat))
+
+        res[i] = np.argmax(np.array(values)) + 1 # we add one to match index
+        
+    acc = sum(res - ytest.reshape(len(ytest), ) == 0)/len(res)
+            
+    return acc, np.array(res).reshape(ytest.shape)
 
 def learnOLERegression(X,y):
     # Inputs:
@@ -149,10 +177,9 @@ else:
 
 # LDA
 means,covmat = ldaLearn(X,y)
-#ldaacc,ldares = ldaTest(means,covmat,Xtest,ytest)
-#print('LDA Accuracy = '+str(ldaacc))
+ldaacc,ldares = ldaTest(means,covmat,Xtest,ytest)
+print('LDA Accuracy = '+str(ldaacc))
 # QDA
-"""
 means,covmats = qdaLearn(X,y)
 qdaacc,qdares = qdaTest(means,covmats,Xtest,ytest)
 print('QDA Accuracy = '+str(qdaacc))
@@ -170,14 +197,14 @@ plt.subplot(1, 2, 1)
 
 zacc,zldares = ldaTest(means,covmat,xx,np.zeros((xx.shape[0],1)))
 plt.contourf(x1,x2,zldares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
-plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest)
+plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest.reshape(ytest.size, ))
 plt.title('LDA')
 
 plt.subplot(1, 2, 2)
 
 zacc,zqdares = qdaTest(means,covmats,xx,np.zeros((xx.shape[0],1)))
 plt.contourf(x1,x2,zqdares.reshape((x1.shape[0],x2.shape[0])),alpha=0.3)
-plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest)
+plt.scatter(Xtest[:,0],Xtest[:,1],c=ytest.reshape(ytest.size, ))
 plt.title('QDA')
 
 plt.show()
@@ -276,4 +303,3 @@ plt.plot(range(pmax),mses5)
 plt.title('MSE for Test Data')
 plt.legend(('No Regularization','Regularization'))
 plt.show()
-"""
