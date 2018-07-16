@@ -122,8 +122,7 @@ def learnOLERegression(X,y):
     # Output:
     # w = d x 1
 
-    # IMPLEMENT THIS METHOD
-    return #w
+    return np.dot(np.linalg.inv(np.dot(X.T, X)), np.dot(X.T, y))
 
 def learnRidgeRegression(X,y,lambd):
     # Inputs:
@@ -144,8 +143,8 @@ def testOLERegression(w,Xtest,ytest):
     # Output:
     # mse
 
-    # IMPLEMENT THIS METHOD
-    return #mse
+    N = float(Xtest.shape[0])
+    return (1/N) * np.dot((ytest - np.dot(Xtest, w)).T, (ytest - np.dot(Xtest, w)))[0,0]
 
 def regressionObjVal(w, X, y, lambd):
 
