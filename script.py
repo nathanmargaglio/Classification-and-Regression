@@ -166,8 +166,12 @@ def mapNonLinear(x,p):
     # Outputs:
     # Xp - (N x (p+1))
 
-    # IMPLEMENT THIS METHOD
-    return #Xp
+    N = x.shape[0]
+    Xp = np.zeros((N, p+1))
+    for deg in range(p+1):
+        Xp[:,deg] = x ** deg
+        
+    return Xp
 
 # Main script
 
