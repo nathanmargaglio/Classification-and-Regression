@@ -316,7 +316,7 @@ the same scheme).
 
 Notice the difference in the shape of the boundaries. For LDA, we see
 the shape is more linear, while for QDA the shape is more quadratic.
-This is because our use of each class' covarience matrix allows for more
+This is because our use of each class' covariance matrix allows for more
 degrees of freedom through more trained variables, making the QDA's
 boundaries fit more closely with the data (despite this actually leading
 to less accuracy in this example).
@@ -352,8 +352,8 @@ Regression}\label{experiment-with-ridge-regression}
 
     For this problem, we implement \emph{Ridge Regression}, similar to
 linear regression like before, but with \emph{L2 regularization}. This
-regularization pentalizes complexity by adding a term to the error
-equivalnet to the squared sum of the weights multiplied by some constant
+regularization penalizes complexity by adding a term to the error
+equivalent to the squared sum of the weights multiplied by some constant
 \(\lambda\).
 
     \begin{center}
@@ -391,7 +391,7 @@ Learning}\label{using-gradient-descent-for-ridge-regression-learning}
     For this problem, we re-implement Ridge Regression, but this time by
 utilizing \emph{Gradient Descent}. The reason we'd use this method over
 directly computing the regression is that the closed-form solution of
-ordinary least squares regression involves taking an inverse of a marix,
+ordinary least squares regression involves taking an inverse of a matrix,
 which may not be suitable in a numerical setting. Gradient Descent helps
 us avoid this issue (at the cost of training time and volatility in
 training).
@@ -434,8 +434,8 @@ regularization using our optimal value from problem 3
 We find that the optimal range of values for \emph{p} for the test data
 is from 1 to 3, with \emph{p=1} providing the best accuracy. We note
 that, as \emph{p} increases past 3, the training error decreases but the
-testing error increases dramitcally. This can be attributed to
-overfitting, as the higher degreed polynomials can better fit the
+testing error increases dramitically. This can be attributed to
+overfitting, as the higher degree polynomials can better fit the
 training data.
 
     \section{Problem 6}\label{problem-6}
